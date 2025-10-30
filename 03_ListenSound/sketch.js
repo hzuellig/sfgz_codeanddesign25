@@ -11,76 +11,60 @@
 */
 
 
-let Instance;
-let soundLevel = 0;
-let font;
-let soundFile = "assets/02_No-Surprises.mp3";//relativer Pfad zum Soundfile
+let micInstance; // globale Variable für die Mikrofon Instanz
+let soundLevel = 0;//von 0 bis 255
+let threshold = 50; //Schwellenwert für Lautstärke
+let drehwinkel = 0;
 
-
-function preload() {
-  font = loadFont("assets/bianco_sans_new_bold-webfont.ttf");
-}
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  textFont(font);
 
 
   /** 
-  * BLOCK 1: nicht aendern
-  * --------Im setup einmalig Zugriff auf Soundfile und Audio bereitstellen */
-  Instance = newCustomAudio();
-  //variante 1, soundfile über input button laden
-  //Instance.createFileButton(); // Erstellt den Button um das Audio zu laden
-  //variante 2, soundfile über pfad
-  loadAudioFile(Instance, soundFile);
+  * BLOCK 1: nicht aendern */
+  micInstance = new Audio(); //Parameter übergibt Beschriftung des Buttons
+  micInstance.createMicButton("Start Mic"); // Erstellt den Button für das Mikrofon
   /** --------- Ende Block 1 */
 }
 
 function draw() {
-  blendMode(BLEND);//BlendMode zurücksetzen, damit die Farben nicht gemischt werden
-  background(255);
-  fill(255);
 
-  
-   /**
-  * * BLOCK 2: nicht aendern
-  * ------------
-  * Hier wird geprüft, ob die Instanz micInstance existiert und ob sie gestartet wurde
-  */
-  if (Instance && Instance.started) {
+  background(255, 10);
+
+  /**
+ * * BLOCK 2: nicht aendern
+ * ------------
+ * Hier wird geprüft, ob die Instanz micInstance existiert und ob sie gestartet wurde
+ */
+  if (micInstance && micInstance.started) {
     /**
     * In jedem Frame wird die aktuelle Lautstärke erfragt 
     * Werte die zurückkommen, gehen von 0 bis 255
     * der Wert wird in der Variable soundLevel gespeichert
     */
 
-    getSoundLevel(Instance).then(level => {
+    getSoundLevel(micInstance).then(level => {
       soundLevel = level;
     });
   }
   /* ------------ 
   Ende BLOCK 2 */
 
-  let anzahlBalken = 10;
-  let spaltenBreite = width / anzahlBalken; // Berechne die Breite der Spalten basierend auf der Anzahl der Balken
-  let fontSize = map(soundLevel, 0, 255, 20, width); // Breite der Ellipsen basierend auf der Lautstärke
+  push();
+  translate(width / 2, height / 2);
+  rotate(drehwinkel);
+  fill(0, 0, 255);
+  rectMode(CENTER);
+  rect(0, 0, 100, 100);
+  
 
-
-  blendMode(DIFFERENCE);// Setze den BlendMode auf DIFFERENCE, um die Farben zu invertieren
-
-  textSize(fontSize); 
-  textAlign(CENTER, CENTER); // Text zentriert ausrichten
-
-
-  for (let i = 0; i < anzahlBalken; i++) {
-    let xpos= i * spaltenBreite+spaltenBreite/2;
-    
-    text("A",
-      xpos, //x-position Text
-      height/2, //y-position Text  
-    ); 
+  if (soundLevel > threshold) {
+    ellipse(200, 0, 50, 50);
   }
+  pop();
+
+  drehwinkel = drehwinkel + soundLevel / 255; //Drehgeschwindigkeit abhängig von Lautstärke
 
 
 }
