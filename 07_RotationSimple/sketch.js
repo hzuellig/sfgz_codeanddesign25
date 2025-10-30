@@ -12,20 +12,16 @@ function draw() {
  
 
 
-  for(let i=0;i<10;i=i+1){
-    //jedes Rechteck individuell drehen
-    //das heisst, jedes hat seinen Drehmittelpunkt 
-    //wo ist der ??
+ 
     push();
-    translate(i*200, height/2);
+    translate(width/2, height/2);
     rotate(drehwinkel);
     fill(0,0,255);
     rect(0, 0, 100,100);
     pop();
 
-    fill(0);
-    ellipse(i*200, height/2, 5);
-  }
+   
+ 
 
   drehwinkel=drehwinkel+1;
 }
